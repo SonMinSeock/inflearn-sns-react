@@ -1,37 +1,74 @@
 import { create } from "zustand";
+import { combine } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 
 // 스토어 타입 정의
-type Store = {
-  count: number;
-  actions: {
-    increase: () => void;
-    decrease: () => void;
-  };
-};
+// type Store = {
+//   count: number;
+//   actions: {
+//     increase: () => void;
+//     decrease: () => void;
+//   };
+// };
+
+// combine 미들웨어 활용
+export const useCountStore = create(
+  immer(
+    combine({ count: 0 }, (set, get) => ({
+      actions: {
+        increase: () => {
+          get();
+          // const count = get().count; // 현재 스토어의 count state 불러오기
+          // set({ count: count + 1 }); // 현재 스토어 업데이트, 명시되어 있는 프로퍼티 있으면 그 프로퍼티가 업데이트한다.
+
+          // 함수형 업데이트
+          // 함수형 업데이트로 많이 사용함
+          // set((state) => ({
+          //   count: state.count + 1,
+          // }));
+
+          set((state) => {
+            state.count += 1;
+          });
+        }, // action
+        decrease: () => {
+          // 함수형 업데이트
+          // set((state) => ({
+          //   count: state.count - 1,
+          // }));
+
+          set((state) => {
+            state.count -= 1;
+          });
+        }, // action
+      },
+    })),
+  ),
+);
 
 // 스토어 생성
 // create 메서드는 state, action 함수를 포함하는 객체인 store를 생성한다.
-export const useCountStore = create<Store>((set, get) => ({
-  count: 0, // state
-  actions: {
-    increase: () => {
-      // const count = get().count; // 현재 스토어의 count state 불러오기
-      // set({ count: count + 1 }); // 현재 스토어 업데이트, 명시되어 있는 프로퍼티 있으면 그 프로퍼티가 업데이트한다.
+// export const useCountStore = create<Store>((set, get) => ({
+//   count: 0, // state
+//   actions: {
+//     increase: () => {
+//       // const count = get().count; // 현재 스토어의 count state 불러오기
+//       // set({ count: count + 1 }); // 현재 스토어 업데이트, 명시되어 있는 프로퍼티 있으면 그 프로퍼티가 업데이트한다.
 
-      // 함수형 업데이트
-      // 함수형 업데이트로 많이 사용함
-      set((store) => ({
-        count: store.count + 1,
-      }));
-    }, // action
-    decrease: () => {
-      // 함수형 업데이트
-      set((store) => ({
-        count: store.count - 1,
-      }));
-    }, // action
-  },
-}));
+//       // 함수형 업데이트
+//       // 함수형 업데이트로 많이 사용함
+//       set((store) => ({
+//         count: store.count + 1,
+//       }));
+//     }, // action
+//     decrease: () => {
+//       // 함수형 업데이트
+//       set((store) => ({
+//         count: store.count - 1,
+//       }));
+//     }, // action
+//   },
+// }));
 
 /**
  * 커스텀 훅들
