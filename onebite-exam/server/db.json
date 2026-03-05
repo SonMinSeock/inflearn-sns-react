@@ -1,3 +1,19 @@
 {
-  "todos": []
+  "todos": [
+    {
+      "id": "14c8",
+      "content": "뚜비 산책하기",
+      "isDone": false
+    },
+    {
+      "id": "d049",
+      "content": "홈 트레이닝 하기",
+      "isDone": false
+    },
+    {
+      "id": "a713",
+      "content": "모닝 러닝 하기",
+      "isDone": false
+    }
+  ]
 }
