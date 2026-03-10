@@ -3,6 +3,7 @@
  */
 
 import supabase from "@/lib/supabase";
+import type { Provider } from "@supabase/supabase-js";
 
 /**
  * signUp 비동기 함수
@@ -53,5 +54,19 @@ export async function signInWithPassword({
   if (error) throw error;
 
   // 로그인 성공 시 사용자 정보 및 세션 반환
+  return data;
+}
+
+/**
+ * 소셜 로그인 비동기 함수
+ * provider 인수 타입을 Supabase 제공하는 type인 Provider 타입 불러와서 정의했다.
+ */
+export async function signInWithOAuth(provider: Provider) {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: provider,
+  });
+
+  if (error) throw error;
+
   return data;
 }
