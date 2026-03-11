@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSignUp } from "@/hooks/mutations/useSignUpMutation";
+import { generateErrorMessage } from "@/lib/error";
 import { useState } from "react";
 import { Link } from "react-router";
+import { toast } from "sonner";
 
 export default function SignUpPage() {
   // 이메일, 패스워드 상태
@@ -10,7 +12,15 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("");
 
   // 회원가입 mutation 커스텀 훅
-  const { mutate: signUp } = useSignUp();
+  const { mutate: signUp, isPending: isSignUpPending } = useSignUp({
+    onError: (error) => {
+      const message = generateErrorMessage(error);
+
+      toast.error(message, {
+        position: "top-center",
+      });
+    },
+  });
 
   // 회원가입 버튼 이벤트 핸들러
   const handleSinUpClick = () => {
@@ -20,7 +30,6 @@ export default function SignUpPage() {
     // 패스워드 입력 검증
     if (!password.trim()) return;
 
-    console.log(email, password);
     signUp({
       email,
       password,
@@ -32,12 +41,14 @@ export default function SignUpPage() {
       <div className="text-xl font-bold">회원 가입</div>
       <div className="flex flex-col gap-2">
         <Input
+          disabled={isSignUpPending}
           className="py-6"
           placeholder="example@abc.com"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
         />
         <Input
+          disabled={isSignUpPending}
           type="password"
           className="py-6"
           placeholder="password"
@@ -46,7 +57,11 @@ export default function SignUpPage() {
         />
       </div>
       <div>
-        <Button className="w-full" onClick={handleSinUpClick}>
+        <Button
+          disabled={isSignUpPending}
+          className="w-full"
+          onClick={handleSinUpClick}
+        >
           회원가입
         </Button>
       </div>
