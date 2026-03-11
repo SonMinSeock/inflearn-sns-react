@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import gitHubLogo from "@/assets/github-mark.svg";
 import { useSignInWithOAuth } from "@/hooks/mutations/useSignInWithOAuth";
+import { toast } from "sonner";
 
 export default function SignInPage() {
   // 이메일, 패스워드 상태
@@ -12,7 +13,16 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
 
   // 로그인 mutation 커스텀 훅
-  const { mutate: signInWithPassword } = useSignInWithPassword();
+  const { mutate: signInWithPassword } = useSignInWithPassword({
+    onError: (error) => {
+      // 토스트 에러 메시지  상단 중앙에 보여준다.
+      toast.error(error.message, {
+        position: "top-center",
+      });
+
+      setPassword(""); // 에러가 발생하면 비밀번호 빈값으로 초기화한다.
+    },
+  });
 
   // 소셜 로그닌 mutation 커스텀 훅
   const { mutate: signInWithOAuth } = useSignInWithOAuth();
