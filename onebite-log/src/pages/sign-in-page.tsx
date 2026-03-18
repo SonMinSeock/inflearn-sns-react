@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useSignInWithPassword } from "@/hooks/mutations/useSignInWithPassword";
+import { useSignInWithPassword } from "@/hooks/mutations/auth/useSignInWithPassword";
 import { useState } from "react";
 import { Link } from "react-router";
 import gitHubLogo from "@/assets/github-mark.svg";
-import { useSignInWithOAuth } from "@/hooks/mutations/useSignInWithOAuth";
+import { useSignInWithOAuth } from "@/hooks/mutations/auth/useSignInWithOAuth";
 import { toast } from "sonner";
 import { generateErrorMessage } from "@/lib/error";
 
