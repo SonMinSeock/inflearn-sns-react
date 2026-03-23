@@ -9,3 +9,8 @@ export const QUERY_KEYS = {
     byId: (userId: string) => ["profile", "byId", userId],
   },
 };
+
+/**
+ * 버킷 상수
+ */
+export const BUCKET_NAME = "uploads";
