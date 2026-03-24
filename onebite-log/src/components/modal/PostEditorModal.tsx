@@ -41,6 +41,27 @@ export default function PostEditorModal() {
     },
   });
 
+  // 입력 내용에 따라 textarea 높이를 자동으로 늘리고 줄임
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto"; // 초기화
+      textareaRef.current.style.height =
+        textareaRef.current.scrollHeight + "px";
+    }
+  }, [content]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      // 메모리에 저장된 이미지를 제거하기, 메모리 누수 방지.
+      images.forEach((image) => URL.revokeObjectURL(image.previewUrl));
+      return;
+    }
+    // 모달 열렸을때 textarea 요소에 포커스 되도록 한다.
+    textareaRef.current?.focus();
+    setContent("");
+    setImages([]);
+  }, [isOpen]);
+
   const handleCloseModal = () => {
     // 작성중 이탈 방지
     if (content !== "" || images.length !== 0) {
@@ -76,7 +97,7 @@ export default function PostEditorModal() {
       files.forEach((file) => {
         setImages((prev) => [
           ...prev,
-          { file, previewUrl: URL.createObjectURL(file) },
+          { file, previewUrl: URL.createObjectURL(file) }, // createObjectURL 함수가 URL로 변환 해주는 것 뿐만 아니라 메모리에 파일 보관한다. 해당 파일 접근 가능한 주소를 반환 하는 형식이다. 선택한 이미지를 삭제해도 메모리에 아직 남아있는 문제가 있다.
         ]);
       });
     }
@@ -89,24 +110,9 @@ export default function PostEditorModal() {
     setImages((prevImages) =>
       prevImages.filter((item) => item.previewUrl !== image.previewUrl),
     );
+
+    URL.revokeObjectURL(image.previewUrl);
   };
-
-  // 입력 내용에 따라 textarea 높이를 자동으로 늘리고 줄임
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"; // 초기화
-      textareaRef.current.style.height =
-        textareaRef.current.scrollHeight + "px";
-    }
-  }, [content]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    // 모달 열렸을때 textarea 요소에 포커스 되도록 한다.
-    textareaRef.current?.focus();
-    setContent("");
-    setImages([]);
-  }, [isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleCloseModal}>
