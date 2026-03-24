@@ -12,6 +12,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { useSession } from "@/store/session";
+import { useOpenAlertModal } from "@/store/alertModal";
 
 type Image = {
   file: File;
@@ -21,6 +22,7 @@ type Image = {
 export default function PostEditorModal() {
   const session = useSession();
   const { isOpen, close } = usePostEditorModal();
+  const openAlertModal = useOpenAlertModal();
 
   const [content, setContent] = useState("");
   const [images, setImages] = useState<Image[]>([]);
@@ -40,6 +42,20 @@ export default function PostEditorModal() {
   });
 
   const handleCloseModal = () => {
+    // 작성중 이탈 방지
+    if (content !== "" || images.length !== 0) {
+      // 작성하다가 이탈할때 경고 모달 보여줘서 닫을건지 한번더 확인 해주는 모달 보여주고자 한다.
+      openAlertModal({
+        title: "게시글 작성이 마무리 되지 않았습니다.",
+        description: "이 화면에서 나가면 작성중이던 내용이 사라집니다.",
+        onPositive: () => {
+          close();
+        },
+      });
+
+      return;
+    }
+
     close();
   };
 
