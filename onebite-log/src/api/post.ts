@@ -7,6 +7,24 @@ import { uploadImage } from "./image";
 import type { PostEntity } from "@/types";
 
 /**
+ * fetchPosts, 포스트 목록 조회 비동기 함수
+ *
+ * - post 테이블의 모든 데이터를 조회한다.
+ * - author_id를 기준으로 profile 테이블과 join하여 작성자 정보도 함께 가져온다.
+ * - 최신 게시글이 위에 오도록 created_at 기준 내림차순 정렬한다.
+ */
+export async function fetchPosts() {
+  const { data, error } = await supabase
+    .from("post")
+    .select("*, author: profile!author_id (*)")
+    .order("created_at", { ascending: false }); // ascending의 단어 뜻이 오름차순이다. 최신순 포스트부터 보여주기 위해 내림차순으로 했다.
+
+  if (error) throw error;
+
+  return data;
+}
+
+/**
  * createPost, 포스트 생성 요청 비동기 함수
  */
 export async function createPost(content: string) {
