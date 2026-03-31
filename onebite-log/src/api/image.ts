@@ -26,3 +26,22 @@ export async function uploadImage({
 
   return publicUrl;
 }
+
+/**
+ * 스토리지 이미지 삭제 비동기 요청
+ */
+
+export async function deleteImagesInPath(path: string) {
+  // path -> user_id/post_id/이미지
+  const { data: files, error: fetchFilesError } = await supabase.storage
+    .from(BUCKET_NAME)
+    .list(path);
+
+  if (fetchFilesError) throw fetchFilesError;
+
+  const { error: removeError } = await supabase.storage
+    .from(BUCKET_NAME)
+    .remove(files.map((file) => `${path}/${file.name}`));
+
+  if (removeError) throw removeError;
+}
