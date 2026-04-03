@@ -10,10 +10,23 @@ import { formatTimeAgo } from "@/lib/time";
 import EditPostButton from "./EditPostButton";
 import DeletePostButton from "./DeletePostButton";
 import { useSession } from "@/store/session";
+import { usePostByIdData } from "@/hooks/queries/usePostByIdData";
+import Loader from "../Loader";
+import Fallback from "../Fallback";
 
-export default function PostItem(post: Post) {
+export default function PostItem({ postId }: { postId: number }) {
   const session = useSession();
   const userId = session?.user.id;
+
+  const {
+    data: post,
+    isPending: isPostByIdDataPending,
+    error,
+  } = usePostByIdData({ postId: postId, type: "FEED" });
+
+  if (isPostByIdDataPending) return <Loader />;
+
+  if (error) return <Fallback />;
 
   const isMine = userId === post.author_id;
 

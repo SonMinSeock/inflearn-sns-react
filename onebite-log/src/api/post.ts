@@ -27,6 +27,21 @@ export async function fetchPosts({ from, to }: { from: number; to: number }) {
 }
 
 /**
+ * fetchPostById, 해당 포스트 조회 비동기 함수
+ */
+export async function fetchPostById(postId: number) {
+  const { data, error } = await supabase
+    .from("post")
+    .select("*, author: profile!author_id (*)")
+    .eq("id", postId)
+    .single();
+
+  if (error) throw error;
+
+  return data;
+}
+
+/**
  * createPost, 포스트 생성 요청 비동기 함수
  */
 export async function createPost(content: string) {
