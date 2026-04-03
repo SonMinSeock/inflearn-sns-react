@@ -26,5 +26,6 @@ export function useInfinitePostData() {
       if (lastPage.length < PAGE_SIZE) return undefined; // 다음페이지 없다고 undefined 보낸다.
       return allPages.length;
     },
+    staleTime: Infinity,
   });
 }
