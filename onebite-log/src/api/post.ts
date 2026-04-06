@@ -9,17 +9,39 @@ import type { PostEntity } from "@/types";
 /**
  * fetchPosts, 포스트 목록 조회 비동기 함수
  *
+ * [기능]
  * - post 테이블 데이터 조회
  * - profile 테이블과 join하여 작성자 정보 포함
  * - created_at 기준 최신순 정렬
- * - range(from, to)로 페이지 단위 조회
+ * - range(from, to)로 페이지 단위 조회 (무한 스크롤 대응)
+ *
+ * [동작 방식]
+ * - Supabase Query Builder를 사용하여 쿼리를 "객체(request)"로 생성
+ * - 조건(authorId)이 있을 경우 동적으로 where 조건(eq) 추가
+ * - await 시점에 실제 API 요청 실행 (지연 실행)
+ *
+ * [특징]
+ * - request는 데이터가 아닌 "쿼리 객체"
+ * - 조건을 유연하게 추가할 수 있어 확장성 높음 (검색, 필터 등)
  */
-export async function fetchPosts({ from, to }: { from: number; to: number }) {
-  const { data, error } = await supabase
+export async function fetchPosts({
+  from,
+  to,
+  authorId,
+}: {
+  from: number;
+  to: number;
+  authorId?: string;
+}) {
+  const request = supabase
     .from("post")
     .select("*, author: profile!author_id (*)")
     .order("created_at", { ascending: false }) // ascending의 단어 뜻이 오름차순이다. 최신순 포스트부터 보여주기 위해 내림차순으로 했다.
     .range(from, to);
+
+  if (authorId) request.eq("author_id", authorId);
+
+  const { data, error } = await request;
 
   if (error) throw error;
 
