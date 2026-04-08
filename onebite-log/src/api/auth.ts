@@ -6,6 +6,21 @@ import supabase from "@/lib/supabase";
 import type { Provider } from "@supabase/supabase-js";
 
 /**
+ * signOut 비동기 함수
+ * Supabase Auth 이용하여 로그아웃 요청한다.
+ */
+export async function signOut() {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    // 에러가 발생하면 Supabase 서버와 관계없이 로컬 스토리지에 보관된 에섹스 토큰을 삭제
+    await supabase.auth.signOut({
+      scope: "local",
+    });
+  }
+}
+
+/**
  * signUp 비동기 함수
  * 이메일과 비밀번호를 이용해 Supabase Auth에 사용자 계정을 생성한다.
  */
