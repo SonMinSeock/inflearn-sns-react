@@ -1,5 +1,6 @@
 import AlertModal from "@/components/modal/AlertModal";
 import PostEditorModal from "@/components/modal/PostEditorModal";
+import ProfileEditorModal from "@/components/modal/ProfileEditorModal";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 
@@ -10,6 +11,7 @@ export default function ModalProvider({ children }: { children: ReactNode }) {
         <>
           <PostEditorModal />
           <AlertModal />
+          <ProfileEditorModal />
         </>,
         document.getElementById("modal-root")!,
       )}
