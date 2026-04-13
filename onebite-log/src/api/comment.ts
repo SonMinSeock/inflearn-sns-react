@@ -40,3 +40,36 @@ export async function createComment({
 
   return data;
 }
+
+/**
+ * fetchComments, 댓글 조회 비동기 함수
+ *
+ * [기능]
+ * - 특정 게시글(postId)에 해당하는 댓글 목록 조회
+ * - profile 테이블과 join하여 작성자 정보(author) 포함
+ * - created_at 기준 최신순 정렬
+ *
+ * [동작 방식]
+ * - Supabase Query Builder를 사용하여 select 쿼리 생성
+ * - "author: profile!author_id (*)" 문법으로 외래키 기반 join 수행
+ *   → comment.author_id = profile.id 관계를 이용
+ * - eq("post_id", postId)로 특정 게시글의 댓글만 필터링
+ * - await 시점에 실제 API 요청 실행
+ *
+ * [특징]
+ * - 댓글 데이터 + 작성자 정보(author)를 함께 반환 (UI 렌더링 최적화)
+ * - author는 profile 테이블의 전체 컬럼(*)을 포함한 객체로 반환됨
+ * - 최신 댓글이 상단에 위치하도록 정렬
+ */
+
+export async function fetchComments(postId: number) {
+  const { data, error } = await supabase
+    .from("comment")
+    .select("*, author: profile!author_id (*)")
+    .eq("post_id", postId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  return data;
+}

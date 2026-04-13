@@ -14,6 +14,10 @@ export const QUERY_KEYS = {
     userList: (userId: string) => ["post", "userList", userId], // 유저별 포스트
     byId: (postId: number) => ["post", "byId", postId],
   },
+  comment: {
+    all: ["comment"],
+    post: (postId: number) => ["comment", "post", postId], // 특정 게시글(postId)에 해당하는 댓글 목록 조회용 key
+  },
 };
 
 /**
