@@ -1,5 +1,4 @@
 import { HeartIcon, MessageCircle } from "lucide-react";
-import type { Post } from "@/types";
 import defaultAvatar from "@/assets/default-avatar.png";
 import {
   Carousel,
