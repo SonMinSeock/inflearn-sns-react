@@ -73,3 +73,40 @@ export async function fetchComments(postId: number) {
 
   return data;
 }
+
+/**
+ * updateComment, 댓글 수정 비동기 함수
+ *
+ * [기능]
+ * - 특정 댓글(id)에 대해 내용(content)을 수정
+ *
+ * [동작 방식]
+ * - Supabase Query Builder를 사용하여 update 쿼리 생성
+ * - update({ content })로 댓글 내용 수정
+ * - eq("id", id)로 특정 댓글 1개를 대상으로 필터링
+ * - select().single()을 통해 수정된 단일 댓글 데이터 반환
+ * - await 시점에 실제 API 요청 실행
+ *
+ * [특징]
+ * - 수정된 최신 댓글 데이터를 즉시 반환 (UI 동기화 용이)
+ * - id를 기준으로 단일 댓글만 업데이트되도록 보장
+ */
+
+export async function updateComment({
+  id,
+  content,
+}: {
+  id: number;
+  content: string;
+}) {
+  const { data, error } = await supabase
+    .from("comment")
+    .update({ content })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  return data;
+}
