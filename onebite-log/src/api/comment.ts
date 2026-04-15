@@ -110,3 +110,34 @@ export async function updateComment({
 
   return data;
 }
+
+/**
+ * deleteComment, 댓글 삭제 비동기 함수
+ *
+ * [기능]
+ * - 특정 댓글(id)을 삭제
+ *
+ * [동작 방식]
+ * - Supabase Query Builder를 사용하여 delete 쿼리 생성
+ * - eq("id", id)로 삭제 대상 댓글 1개 필터링
+ * - select().single()을 통해 삭제된 댓글 데이터 반환
+ * - await 시점에 실제 API 요청 실행
+ *
+ * [특징]
+ * - 삭제된 댓글 데이터를 반환하여 후처리(UI 업데이트 등)에 활용 가능
+ * - id를 기준으로 단일 댓글만 삭제되도록 보장
+ * - 삭제 후 캐시 업데이트 또는 리스트 refetch에 활용 가능
+ */
+
+export async function deleteComment(id: number) {
+  const { data, error } = await supabase
+    .from("comment")
+    .delete()
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  return data;
+}
