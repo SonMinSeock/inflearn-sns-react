@@ -10,6 +10,11 @@ export type Post = PostEntity & { author: ProfileEntity };
 
 export type Comment = CommentEntity & { author: ProfileEntity };
 
+export type NestedComment = Comment & {
+  parentComment?: Comment;
+  children: NestedComment[];
+};
+
 export type UseMutationCallbacks = {
   onSuccess?: () => void;
   onMutate?: () => void;
