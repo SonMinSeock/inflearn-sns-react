@@ -11,30 +11,62 @@ import supabase from "@/lib/supabase";
  * - comment 테이블에 새로운 댓글 데이터 생성
  * - post_id를 통해 특정 게시글과 연결
  * - content를 저장하여 댓글 내용 등록
+ * - parent_comment_id, root_comment_id를 활용하여 무한 중첩 구조 구성
  *
  * [동작 방식]
  * - Supabase Query Builder를 사용하여 insert 쿼리 생성
  * - insert 이후 select().single()을 통해 생성된 데이터 반환
  * - await 시점에 실제 API 요청 실행
  *
+ * [중첩 댓글 구조 설명]
+ * - parent_comment_id:
+ *   → 직계 부모 댓글 id (트리 구조 형성)
+ *
+ * - root_comment_id:
+ *   → 해당 댓글이 속한 최상위 댓글 id (댓글 그룹 식별)
+ *   → 동일 root_comment_id를 가진 댓글들은 하나의 스레드로 간주됨
+ *
+ * [댓글 생성 규칙]
+ * 1. 일반 댓글 (depth 1)
+ *    - parent_comment_id: null
+ *    - root_comment_id: 생성된 자신의 id (추가 처리 or DB trigger 필요)
+ *
+ * 2. 대댓글 (depth 2 이상)
+ *    - parent_comment_id: 부모 댓글 id
+ *    - root_comment_id: 부모의 root_comment_id
+ *      (부모가 root라면 parent.id 사용)
+ *
+ *    예시:
+ *    A (id:1) → root_comment_id:1
+ *      └ B (id:2) → root_comment_id:1
+ *         └ C (id:3) → root_comment_id:1
+ *
  * [특징]
  * - 생성된 댓글 데이터를 즉시 반환하여 UI 업데이트에 활용 가능
  * - post_id는 외래키로 post 테이블과 관계를 가짐
  * - 인증된 사용자 기준으로 author_id는 DB(RLS/trigger)에서 자동 처리 가능
+ * - root_comment_id를 통해 댓글 트리 단위 조회 및 정렬 최적화 가능
  */
 
 export async function createComment({
   postId,
   content,
   parentCommentId,
+  rootCommentId,
 }: {
   postId: number;
   content: string;
   parentCommentId?: number;
+  rootCommentId?: number;
 }) {
   const { data, error } = await supabase
     .from("comment")
-    .insert({ post_id: postId, content, parent_comment_id: parentCommentId })
+    .insert({
+      post_id: postId,
+      content,
+      parent_comment_id: parentCommentId,
+      root_comment_id: rootCommentId,
+    })
     .select()
     .single();
 

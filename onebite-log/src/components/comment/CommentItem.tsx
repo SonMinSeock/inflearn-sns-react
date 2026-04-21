@@ -27,6 +27,8 @@ export default function CommentItem(props: NestedComment) {
 
   const isRootComment = props.parentComment === undefined;
 
+  const isOverTwoLevels = props.parent_comment_id !== props.root_comment_id; // 대대댓글 유무
+
   const toggleIsEditing = () => setIsEditing((prev) => !prev);
 
   const toggleIsReply = () => setIsReply((prev) => !prev);
@@ -64,7 +66,14 @@ export default function CommentItem(props: NestedComment) {
               onClose={toggleIsEditing}
             />
           ) : (
-            <div>{props.content}</div>
+            <div>
+              {isOverTwoLevels && (
+                <span className="font-bold text-blue-500">
+                  @{props.parentComment?.author.nickname}&nbsp;
+                </span>
+              )}
+              {props.content}
+            </div>
           )}
           <div className="text-muted-foreground flex justify-between text-sm">
             <div className="flex items-center gap-2">
@@ -104,6 +113,7 @@ export default function CommentItem(props: NestedComment) {
           type="REPLY"
           postId={props.post_id}
           parentCommentId={props.id}
+          rootCommentId={props.root_comment_id || props.id}
           onClose={toggleIsReply}
         />
       )}
