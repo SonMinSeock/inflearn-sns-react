@@ -2,6 +2,8 @@
  * Tanstack Query의 쿼리 키 팩토리 상수
  */
 
+import type { Theme } from "@/types";
+
 export const QUERY_KEYS = {
   profile: {
     all: ["profile"],
@@ -24,3 +26,9 @@ export const QUERY_KEYS = {
  * 버킷 상수
  */
 export const BUCKET_NAME = "uploads";
+
+/**
+ * 테마 모드 상수
+ */
+
+export const THEMES: Theme[] = ["system", "dark", "light"];
