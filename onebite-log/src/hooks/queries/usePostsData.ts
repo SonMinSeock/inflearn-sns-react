@@ -8,6 +8,6 @@ import { useQuery } from "@tanstack/react-query";
 export function usePostsData() {
   return useQuery({
     queryKey: QUERY_KEYS.post.list,
-    queryFn: fetchPosts,
+    queryFn: () => fetchPosts,
   });
 }
